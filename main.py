@@ -30,7 +30,17 @@ def batch_convert_nd2_tif(path_parent_dir):
                 nd2_tif(os.path.join(root, file), output_directory=output_dir)
 
                 
-def get_nd2_metadata(path_to_nd2):
+def get_nd2_metadata(path_to_nd2, metadata=False, experiment=False, text_info=False,
+                     custom_data=False, attributes=False):
     with nd2.ND2File(path_to_nd2) as f:
-        pprint(f.metadata)
+        if metadata:
+            pprint(f.metadata)
+        if experiment:
+            pprint(f.experiment)
+        if text_info:
+            pprint(f.text_info)
+        if custom_data:
+            pprint(f.custom_data)
+        if attributes:
+            pprint(f.attributes)
     
