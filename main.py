@@ -2,6 +2,7 @@ import nd2
 import numpy as np
 from skimage import io
 import os
+from pprint import pprint
 
 
 def nd2_tif(raw_nd2_path, output_directory=None):
