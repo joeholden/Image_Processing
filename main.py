@@ -28,7 +28,3 @@ def batch_convert_nd2_tif(path_parent_dir):
         for file in files:
             if file.endswith('.nd2'):
                 nd2_tif(os.path.join(root, file), output_directory=output_dir)
-
-
-# batch_convert_nd2_tif(r'C:\Users\joema\PycharmProjects\e phys plot')
-nd2_tif(r'C:\Users\joema\PycharmProjects\e phys plot\2022-03-17_c1.nd2', output_directory=r'C:\Users\joema\PycharmProjects\e phys plot')
