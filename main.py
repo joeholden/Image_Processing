@@ -31,6 +31,6 @@ def batch_convert_nd2_tif(path_parent_dir):
 
                 
 def get_nd2_metadata(path_to_nd2):
-    f = nd2.ND2File(path_to_nd2)
-    pprint(f.metadata)
+    with nd2.ND2File(path_to_nd2) as f:
+        pprint(f.metadata)
     
