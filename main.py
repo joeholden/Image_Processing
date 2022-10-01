@@ -45,3 +45,36 @@ def get_nd2_metadata(path_to_nd2, metadata=False, experiment=False, text_info=Fa
         if attributes:
             pprint(f.attributes)
     
+    
+def downsize_large_tif(image_path, scale_factor, save_full_size=False, output_directory=None):
+    """Accepts a raw string for the image path and accepts .nd2 or .tif paths
+    If you want to scale down the image, provide a scale factor. For example sf of 2 decreases each dimension by 2,
+     so decreases area by a factor of 4."""
+    # Set up necessary folder and filename variables
+    slash_corrected_path = image_path.replace('\\', '/')
+    filename = Path(slash_corrected_path).stem
+    if not os.path.exists(filename):
+        os.mkdir(filename)
+
+    # If the filetype is .nd2, make it a tiff and save the path of the tif. If the path is to a tiff already,
+    # point to it.
+    if slash_corrected_path.endswith('nd2'):
+        nd2_tif(image_path, output_directory=Path(slash_corrected_path).stem)
+        tif_path = os.path.join(Path(slash_corrected_path).stem, filename + '.tiff')
+    else:
+        tif_path = slash_corrected_path
+
+    # Read in the tif. If the files are too large, cv2 cannot open them. Use Tifffile instead
+    img = tifi.imread(tif_path)
+    img_dims = img.shape
+    page_count = img_dims[0]  # check how channels vs pages are stored in array
+    pixel_dims = (img_dims[1], img_dims[2])
+    scaled_dims = tuple(int(round(i / scale_factor, 0)) for i in pixel_dims)
+
+    # For each page in tiff, save each page separately. Both full size and scaled.
+    for i in range(page_count):
+        page = img[i]
+        if save_full_size:
+            cv2.imwrite(f'{filename}/original_scale_page {i}.png', page)
+        resized_page = cv2.resize(page, scaled_dims)
+        cv2.imwrite(f'{filename}/scaled_{scale_factor}_page_{i}.png', resized_page)    
