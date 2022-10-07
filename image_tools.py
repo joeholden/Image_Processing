@@ -6,6 +6,8 @@ import cv2
 from pathlib import Path
 import os
 from pprint import pprint
+import roifile
+import matplotlib as mpl
 
 
 def nd2_tif(raw_nd2_path, output_directory=None):
@@ -80,4 +82,22 @@ def downsize_large_tif(image_path, scale_factor, save_full_size=False, output_di
         if save_full_size:
             cv2.imwrite(f'{filename}/original_scale_page {i}.png', page)
         resized_page = cv2.resize(page, scaled_dims)
-        cv2.imwrite(f'{filename}/scaled_{scale_factor}_page_{i}.png', resized_page)    
+        cv2.imwrite(f'{filename}/scaled_{scale_factor}_page_{i}.png', resized_page)  
+        
+
+def get_roi_pixels(roi_path):
+    """Returns a list of pixel points that lie within a polygon ROI. Be sure to reference these points
+    in opencv as reversed. They are saved (i, j) but referencing a pixel in opencv would be image[j, i]"""
+    roi = roifile.ImagejRoi.fromfile(roi_path)
+    # rectangle bounds
+    x_bounds = (min([i[0] for i in roi.coordinates()]), max([i[0] for i in roi.coordinates()]))
+    y_bounds = (min([i[1] for i in roi.coordinates()]), max([i[1] for i in roi.coordinates()]))
+
+    px_inside = []
+    path = mpl.path.Path(roi.coordinates())
+    for i in range(x_bounds[0], x_bounds[1]):
+        for j in range(y_bounds[0], y_bounds[1]):
+            inside_test = path.contains_point((i, j), transform=None, radius=0.0)
+            if inside_test:
+                px_inside.append((i, j))
+    return px_inside        
