@@ -106,6 +106,8 @@ def get_roi_pixels(roi_path):
 
 def colorbar(cmap, orientation, save_path=None, dim1=5, dim2=150):
     """
+    Writes a colorbar image to the home directory or the supplied directory, 'save_path'.
+    
     :param cmap: use mpl colormap name
     :param orientation: 'h' for horizontal, 'v' for vertical
     :param dim1: short dimension, height for horizontal and width for vertical
