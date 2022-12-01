@@ -8,6 +8,7 @@ import os
 from pprint import pprint
 import roifile
 import matplotlib as mpl
+import matplotlib.pyplot as plt
 
 
 def nd2_tif(raw_nd2_path, output_directory=None):
@@ -101,3 +102,35 @@ def get_roi_pixels(roi_path):
             if inside_test:
                 px_inside.append((i, j))
     return px_inside        
+
+
+def colorbar(cmap, orientation, save_path=None, dim1=5, dim2=150):
+    """
+    :param cmap: use mpl colormap name
+    :param orientation: 'h' for horizontal, 'v' for vertical
+    :param dim1: short dimension, height for horizontal and width for vertical
+    :param dim2: long dimension, width for horizontal and height for vertical
+    :param save_path: path to save the color-bar image. If path is supplied, do not have a trailing slash
+    :return: void
+    """
+    pixel_array = np.array([])
+    for i in range(256):
+        pixel_array = np.append(pixel_array, [int(i)]*dim1)
+
+    if orientation == 'v':
+        pixel_array = np.flip(pixel_array)
+
+    pixel_array = np.repeat(pixel_array[:, np.newaxis], dim2, axis=1)
+
+    if orientation == 'v':
+        if save_path:
+            plt.imsave(save_path + f'/{cmap}_colorbar.png', pixel_array, cmap=cmap)
+        else:
+            plt.imsave(f'{cmap}_colorbar.png', pixel_array, cmap=cmap)
+    elif orientation == 'h':
+        if save_path:
+            plt.imsave(save_path + f'/{cmap}_colorbar.png', pixel_array.T, cmap=cmap)
+        else:
+            plt.imsave(f'{cmap}_colorbar.png', pixel_array.T, cmap=cmap)
+    else:
+        raise Exception('Typo in Orientation Parameter')
